@@ -8,7 +8,7 @@ reponum=1
 trynum=1
 
 usage() {
-	echo "Usage: $0 [-s] [-d DIRECTORY]"
+	echo "Usage: $0 [-s] [-r] [-d DIRECTORY]"
 	echo ""
 	exit 1
 }
@@ -22,10 +22,11 @@ repo_check() {
 	echo $?
 }
 
-while getopts "sd:" args
+while getopts "srd:" args
 do
 	case $args in
 	"s")	needSync="yes";;
+	"r")	needReset="yes";;
 	"d")	userpath=$OPTARG;;
 	"?")	usage;;
 	esac
@@ -63,6 +64,9 @@ while [ "$reponum" -le "$REPONUMS" ]; do
 			# exist & is needed: pull to sync
 			cd $repo_path
 			git pull origin
+			if [ "$needReset" = "yes" ]; then
+				git reset --hard origin/HEAD
+			fi
 			cd $project_path
 		fi
 	else
